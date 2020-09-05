@@ -357,6 +357,9 @@ class Camera(object):
         self.set_pixel_array(self.background)
         return self
 
+    def set_frame_to_background(self, background):
+        self.set_pixel_array(background)
+
     ####
 
     # TODO, it's weird that this is part of camera.

@@ -57,6 +57,7 @@ from .scene.graph_scene import *
 from .scene.moving_camera_scene import *
 from .scene.reconfigurable_scene import *
 from .scene.scene import *
+from .scene.js_scene import *
 from .scene.sample_space_scene import *
 from .scene.three_d_scene import *
 from .scene.vector_space_scene import *

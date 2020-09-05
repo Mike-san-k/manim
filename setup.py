@@ -22,5 +22,8 @@ setup(
         "pygments",
         "pyreadline; sys_platform == 'win32'",
         "rich>=4.2.1",
+        "grpc",
+        "grpcio",
+        "grpcio-tools",
     ],
 )
