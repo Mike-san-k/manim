@@ -23,6 +23,11 @@ class RenderServerStub(object):
                 request_serializer=renderserver__pb2.ManimStatusRequest.SerializeToString,
                 response_deserializer=renderserver__pb2.ManimStatusResponse.FromString,
                 )
+        self.UpdateScene = channel.unary_unary(
+                '/renderserver.RenderServer/UpdateScene',
+                request_serializer=renderserver__pb2.UpdateSceneRequest.SerializeToString,
+                response_deserializer=renderserver__pb2.UpdateSceneResponse.FromString,
+                )
 
 
 class RenderServerServicer(object):
@@ -42,6 +47,12 @@ class RenderServerServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def UpdateScene(self, request, context):
+        """Missing associated documentation comment in .proto file"""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_RenderServerServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -54,6 +65,11 @@ def add_RenderServerServicer_to_server(servicer, server):
                     servicer.ManimStatus,
                     request_deserializer=renderserver__pb2.ManimStatusRequest.FromString,
                     response_serializer=renderserver__pb2.ManimStatusResponse.SerializeToString,
+            ),
+            'UpdateScene': grpc.unary_unary_rpc_method_handler(
+                    servicer.UpdateScene,
+                    request_deserializer=renderserver__pb2.UpdateSceneRequest.FromString,
+                    response_serializer=renderserver__pb2.UpdateSceneResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -94,5 +110,21 @@ class RenderServer(object):
         return grpc.experimental.unary_unary(request, target, '/renderserver.RenderServer/ManimStatus',
             renderserver__pb2.ManimStatusRequest.SerializeToString,
             renderserver__pb2.ManimStatusResponse.FromString,
+            options, channel_credentials,
+            call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def UpdateScene(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/renderserver.RenderServer/UpdateScene',
+            renderserver__pb2.UpdateSceneRequest.SerializeToString,
+            renderserver__pb2.UpdateSceneResponse.FromString,
             options, channel_credentials,
             call_credentials, compression, wait_for_ready, timeout, metadata)

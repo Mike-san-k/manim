@@ -1,4 +1,5 @@
 from ...config import camera_config
+from ...config import file_writer_config
 from ...scene import scene
 from ..gen import frameserver_pb2
 from ..gen import frameserver_pb2_grpc
@@ -6,21 +7,29 @@ from ..gen import renderserver_pb2
 from ..gen import renderserver_pb2_grpc
 from concurrent import futures
 from google.protobuf import json_format
+from watchdog.events import LoggingEventHandler, FileSystemEventHandler
+from watchdog.observers import Observer
 import grpc
 import subprocess as sp
 import threading
+import time
+import ctypes
+from ...utils.module_ops import (
+    get_module,
+    get_scene_classes_from_module,
+    get_scenes_to_render,
+)
 
 
 class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
     def __init__(self, scene_class):
-        self.keyframes = []
-        self.scene = scene_class(frame_server=self)
-        self.scene_thread = threading.Thread(
-            target=lambda s: s.render(), args=(self.scene,)
-        )
-        self.scene_thread.start()
-        self.previous_frame_animation_index = None
-        self.scene_finished = False
+        self.initialize_scene(scene_class)
+
+        path = "./example_scenes/basic.py"
+        event_handler = UpdateFrontendHandler(self)
+        observer = Observer()
+        observer.schedule(event_handler, path)
+        observer.start()
 
         # If a javascript renderer is running, notify it of the scene
         # being served. If not, spawn one.
@@ -33,6 +42,16 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
                 stub.ManimStatus(request)
             except grpc._channel._InactiveRpcError:
                 sp.Popen(camera_config["js_renderer_path"])
+
+    def initialize_scene(self, scene_class, start_animation=None):
+        self.keyframes = []
+        self.scene = scene_class(self, start_animation=start_animation)
+        self.scene_thread = threading.Thread(
+            target=lambda s: s.render(), args=(self.scene,)
+        )
+        self.scene_thread.start()
+        self.previous_frame_animation_index = None
+        self.scene_finished = False
 
     def GetFrameAtTime(self, request, context):
         # Update the Scene to the requested time.
@@ -141,9 +160,12 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
         response.scene_name = str(self.scene)
         return response
 
-    def UpdateSceneLocation(self, request, context):
-        response = frameserver_pb2.SceneLocationResponse()
-        return response
+    # def UpdateSceneLocation(self, request, context):
+    #     # Reload self.scene.
+    #     print(scene_classes_to_render)
+
+    #     response = frameserver_pb2.SceneLocationResponse()
+    #     return response
 
 
 def list_to_frame_response(serialized_mobject_list, duration):
@@ -167,6 +189,81 @@ def list_to_frame_response(serialized_mobject_list, duration):
         )
         mob_proto.style.stroke_width = float(mob_serialization["style"]["stroke_width"])
     return response
+
+
+class UpdateFrontendHandler(FileSystemEventHandler):
+    """Logs all the events captured."""
+
+    def __init__(self, frame_server):
+        super().__init__()
+        self.frame_server = frame_server
+
+    def on_moved(self, event):
+        super().on_moved(event)
+        raise NotImplementedError("Update not implemented for moved files.")
+
+    def on_deleted(self, event):
+        super().on_deleted(event)
+        raise NotImplementedError("Update not implemented for deleted files.")
+
+    def on_modified(self, event):
+        super().on_modified(event)
+        module = get_module(file_writer_config["input_file"])
+        all_scene_classes = get_scene_classes_from_module(module)
+        scene_classes_to_render = get_scenes_to_render(all_scene_classes)
+        scene_class = scene_classes_to_render[0]
+
+        # Get the old thread's ID.
+        old_thread_id = None
+        old_thread = self.frame_server.scene_thread
+        if hasattr(old_thread, "_thread_id"):
+            old_thread_id = old_thread._thread_id
+        if old_thread_id is None:
+            for thread_id, thread in threading._active.items():
+                if thread is old_thread:
+                    old_thread_id = thread_id
+
+        # Stop the old thread.
+        res = ctypes.pythonapi.PyThreadState_SetAsyncExc(
+            old_thread_id, ctypes.py_object(SystemExit)
+        )
+        if res > 1:
+            ctypes.pythonapi.PyThreadState_SetAsyncExc(old_thread_id, 0)
+            print("Exception raise failure")
+        old_thread.join()
+
+        # Start a new thread.
+        self.frame_server.initialize_scene(scene_class, start_animation=1)
+        self.frame_server.scene.reached_start_animation.wait()
+
+        # Serialize data on Animations up to the target one.
+        animations = []
+        for scene in self.frame_server.keyframes:
+            if scene.animations:
+                animation_duration = scene.run_time
+                if len(scene.animations) == 1:
+                    animation_name = str(scene.animations[0])
+                else:
+                    animation_name = f"{str(scene.animations[0])}..."
+            else:
+                animation_duration = scene.duration
+                animation_name = "Wait"
+            animations.append(
+                renderserver_pb2.Animation(
+                    name=animation_name, duration=animation_duration,
+                )
+            )
+
+        # Reset the renderer.
+        with grpc.insecure_channel("localhost:50052") as channel:
+            stub = renderserver_pb2_grpc.RenderServerStub(channel)
+            try:
+                request = renderserver_pb2.ManimStatusRequest(
+                    scene_name=str(self.frame_server.scene), animations=animations
+                )
+                stub.ManimStatus(request)
+            except grpc._channel._InactiveRpcError:
+                sp.Popen(camera_config["js_renderer_path"])
 
 
 def get(scene_class):

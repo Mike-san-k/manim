@@ -11,6 +11,7 @@ rich>=4.2.1
 grpc
 grpcio
 grpcio-tools
+watchdog
 
 # for development only:
 # pytest

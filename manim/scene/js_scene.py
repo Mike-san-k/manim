@@ -25,11 +25,12 @@ def get_random_name(name_map):
 
 
 class JsScene(scene.Scene):
-    def __init__(self, frame_server):
-        self.frame_server = frame_server
+    def __init__(self, frame_server, start_animation=None):
         super().__init__(camera_class=JsCamera)
+        self.frame_server = frame_server
+        self.start_animation = start_animation if start_animation else -1
+        self.reached_start_animation = Event()
         self.animation_finished = Event()
-        self.tear_down_scene = Event()
         self.renderer_waiting = False
 
     def __deepcopy__(self, memo):
@@ -96,7 +97,6 @@ class JsScene(scene.Scene):
                 stub.ManimStatus(request)
             except grpc._channel._InactiveRpcError as e:
                 logger.error(e)
-        self.tear_down_scene.wait()
 
     def progress_through_animations(self):
         self.frame_server.keyframes.append(copy.deepcopy(self))
@@ -105,7 +105,13 @@ class JsScene(scene.Scene):
             with grpc.insecure_channel("localhost:50052") as channel:
                 stub = renderserver_pb2_grpc.RenderServerStub(channel)
                 stub.AnimationStatus(renderserver_pb2.AnimationStatusRequest())
-        self.animation_finished.wait()
+
+        print(self.start_animation)
+        print(self.num_plays)
+        print("waiting in play()...")
+        if self.num_plays == self.start_animation:
+            self.reached_start_animation.set()
+            self.animation_finished.wait()
 
     @scene.handle_play_like_call
     def wait(self, duration=DEFAULT_WAIT_TIME, stop_condition=None):
@@ -121,7 +127,10 @@ class JsScene(scene.Scene):
             with grpc.insecure_channel("localhost:50052") as channel:
                 stub = renderserver_pb2_grpc.RenderServerStub(channel)
                 stub.AnimationStatus(renderserver_pb2.AnimationStatusRequest())
-        self.animation_finished.wait()
+        print("waiting in wait()...")
+        if self.num_plays == self.start_animation:
+            self.reached_start_animation.set()
+            self.animation_finished.wait()
 
     def add_frames(self, serialized_frame, num_frames=1):
         dt = 1 / self.camera.frame_rate

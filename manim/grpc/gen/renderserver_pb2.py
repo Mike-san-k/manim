@@ -18,10 +18,48 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='renderserver',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=b'\n\x12renderserver.proto\x12\x0crenderserver\"\x18\n\x16\x41nimationStatusRequest\"\x19\n\x17\x41nimationStatusResponse\"@\n\x12ManimStatusRequest\x12\x12\n\nscene_name\x18\x01 \x01(\t\x12\x16\n\x0escene_finished\x18\x02 \x01(\x08\"\x15\n\x13ManimStatusResponse2\xc2\x01\n\x0cRenderServer\x12^\n\x0f\x41nimationStatus\x12$.renderserver.AnimationStatusRequest\x1a%.renderserver.AnimationStatusResponse\x12R\n\x0bManimStatus\x12 .renderserver.ManimStatusRequest\x1a!.renderserver.ManimStatusResponseb\x06proto3'
+  serialized_pb=b'\n\x12renderserver.proto\x12\x0crenderserver\"+\n\tAnimation\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x10\n\x08\x64uration\x18\x02 \x01(\x02\"\x18\n\x16\x41nimationStatusRequest\"\x19\n\x17\x41nimationStatusResponse\"m\n\x12ManimStatusRequest\x12\x12\n\nscene_name\x18\x01 \x01(\t\x12\x16\n\x0escene_finished\x18\x02 \x01(\x08\x12+\n\nanimations\x18\x03 \x03(\x0b\x32\x17.renderserver.Animation\"\x15\n\x13ManimStatusResponse\"\x14\n\x12UpdateSceneRequest\"\x15\n\x13UpdateSceneResponse2\x96\x02\n\x0cRenderServer\x12^\n\x0f\x41nimationStatus\x12$.renderserver.AnimationStatusRequest\x1a%.renderserver.AnimationStatusResponse\x12R\n\x0bManimStatus\x12 .renderserver.ManimStatusRequest\x1a!.renderserver.ManimStatusResponse\x12R\n\x0bUpdateScene\x12 .renderserver.UpdateSceneRequest\x1a!.renderserver.UpdateSceneResponseb\x06proto3'
 )
 
 
+
+
+_ANIMATION = _descriptor.Descriptor(
+  name='Animation',
+  full_name='renderserver.Animation',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='name', full_name='renderserver.Animation.name', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='duration', full_name='renderserver.Animation.duration', index=1,
+      number=2, type=2, cpp_type=6, label=1,
+      has_default_value=False, default_value=float(0),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=36,
+  serialized_end=79,
+)
 
 
 _ANIMATIONSTATUSREQUEST = _descriptor.Descriptor(
@@ -43,8 +81,8 @@ _ANIMATIONSTATUSREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=36,
-  serialized_end=60,
+  serialized_start=81,
+  serialized_end=105,
 )
 
 
@@ -67,8 +105,8 @@ _ANIMATIONSTATUSRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=62,
-  serialized_end=87,
+  serialized_start=107,
+  serialized_end=132,
 )
 
 
@@ -93,6 +131,13 @@ _MANIMSTATUSREQUEST = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='animations', full_name='renderserver.ManimStatusRequest.animations', index=2,
+      number=3, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -105,8 +150,8 @@ _MANIMSTATUSREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=89,
-  serialized_end=153,
+  serialized_start=134,
+  serialized_end=243,
 )
 
 
@@ -129,15 +174,74 @@ _MANIMSTATUSRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=155,
-  serialized_end=176,
+  serialized_start=245,
+  serialized_end=266,
 )
 
+
+_UPDATESCENEREQUEST = _descriptor.Descriptor(
+  name='UpdateSceneRequest',
+  full_name='renderserver.UpdateSceneRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=268,
+  serialized_end=288,
+)
+
+
+_UPDATESCENERESPONSE = _descriptor.Descriptor(
+  name='UpdateSceneResponse',
+  full_name='renderserver.UpdateSceneResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=290,
+  serialized_end=311,
+)
+
+_MANIMSTATUSREQUEST.fields_by_name['animations'].message_type = _ANIMATION
+DESCRIPTOR.message_types_by_name['Animation'] = _ANIMATION
 DESCRIPTOR.message_types_by_name['AnimationStatusRequest'] = _ANIMATIONSTATUSREQUEST
 DESCRIPTOR.message_types_by_name['AnimationStatusResponse'] = _ANIMATIONSTATUSRESPONSE
 DESCRIPTOR.message_types_by_name['ManimStatusRequest'] = _MANIMSTATUSREQUEST
 DESCRIPTOR.message_types_by_name['ManimStatusResponse'] = _MANIMSTATUSRESPONSE
+DESCRIPTOR.message_types_by_name['UpdateSceneRequest'] = _UPDATESCENEREQUEST
+DESCRIPTOR.message_types_by_name['UpdateSceneResponse'] = _UPDATESCENERESPONSE
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
+
+Animation = _reflection.GeneratedProtocolMessageType('Animation', (_message.Message,), {
+  'DESCRIPTOR' : _ANIMATION,
+  '__module__' : 'renderserver_pb2'
+  # @@protoc_insertion_point(class_scope:renderserver.Animation)
+  })
+_sym_db.RegisterMessage(Animation)
 
 AnimationStatusRequest = _reflection.GeneratedProtocolMessageType('AnimationStatusRequest', (_message.Message,), {
   'DESCRIPTOR' : _ANIMATIONSTATUSREQUEST,
@@ -167,6 +271,20 @@ ManimStatusResponse = _reflection.GeneratedProtocolMessageType('ManimStatusRespo
   })
 _sym_db.RegisterMessage(ManimStatusResponse)
 
+UpdateSceneRequest = _reflection.GeneratedProtocolMessageType('UpdateSceneRequest', (_message.Message,), {
+  'DESCRIPTOR' : _UPDATESCENEREQUEST,
+  '__module__' : 'renderserver_pb2'
+  # @@protoc_insertion_point(class_scope:renderserver.UpdateSceneRequest)
+  })
+_sym_db.RegisterMessage(UpdateSceneRequest)
+
+UpdateSceneResponse = _reflection.GeneratedProtocolMessageType('UpdateSceneResponse', (_message.Message,), {
+  'DESCRIPTOR' : _UPDATESCENERESPONSE,
+  '__module__' : 'renderserver_pb2'
+  # @@protoc_insertion_point(class_scope:renderserver.UpdateSceneResponse)
+  })
+_sym_db.RegisterMessage(UpdateSceneResponse)
+
 
 
 _RENDERSERVER = _descriptor.ServiceDescriptor(
@@ -175,8 +293,8 @@ _RENDERSERVER = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   serialized_options=None,
-  serialized_start=179,
-  serialized_end=373,
+  serialized_start=314,
+  serialized_end=592,
   methods=[
   _descriptor.MethodDescriptor(
     name='AnimationStatus',
@@ -194,6 +312,15 @@ _RENDERSERVER = _descriptor.ServiceDescriptor(
     containing_service=None,
     input_type=_MANIMSTATUSREQUEST,
     output_type=_MANIMSTATUSRESPONSE,
+    serialized_options=None,
+  ),
+  _descriptor.MethodDescriptor(
+    name='UpdateScene',
+    full_name='renderserver.RenderServer.UpdateScene',
+    index=2,
+    containing_service=None,
+    input_type=_UPDATESCENEREQUEST,
+    output_type=_UPDATESCENERESPONSE,
     serialized_options=None,
   ),
 ])
