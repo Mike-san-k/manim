@@ -14,7 +14,7 @@ import inspect
 import random
 import string
 import types
-from ..logger import logger
+from ..config.logger import logger
 
 
 def get_random_name(name_map):

@@ -1,6 +1,6 @@
 from .. import constants
 from ..config import file_writer_config
-from ..logger import logger, console
+from ..config.logger import logger, console
 from ..scene.scene import Scene
 import importlib.util
 import inspect

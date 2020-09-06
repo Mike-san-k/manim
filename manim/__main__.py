@@ -9,9 +9,8 @@ import importlib.util
 import types
 
 from . import constants, logger, console, file_writer_config
-from .config.config import args
-from .config import file_writer_config, camera_config, args, cfg_subcmds
-from .utils import cfg_subcmds
+from .config.config import file_writer_config, camera_config, args
+from .config import cfg_subcmds
 from .utils.module_ops import (
     get_module,
     get_scene_classes_from_module,
@@ -20,7 +19,6 @@ from .utils.module_ops import (
 from .scene.scene import Scene
 from .utils.sounds import play_error_sound, play_finish_sound
 from .utils.file_ops import open_file as open_media_file
-from .logger import logger, console
 from .grpc.impl import frame_server_impl
 
 
